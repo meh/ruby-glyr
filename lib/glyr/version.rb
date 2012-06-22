@@ -12,6 +12,6 @@ require 'glyr'
 
 module Glyr
 	def self.version
-		'0.9.9.1'
+		'0.9.9'
 	end
 end
