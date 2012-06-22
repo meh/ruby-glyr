@@ -154,9 +154,24 @@ class Query
 		raise_if_error C.glyr_opt_force_utf8(to_native, false)
 	end
 
-	def get
+	def get (&block)
 		error  = FFI::MemoryPointer.new :int
 		length = FFI::MemoryPointer.new :int
+
+		if block
+			raise_if_error C.glyr_opt_dlcallback(to_native, proc {|data, query|
+				result = block.call(Result::Data.copy(C::MemCache.new(data)))
+
+				if result.respond_to? :to_i
+					C::Error[result.to_i]
+				elsif result.respond_to? :to_sym
+					result.to_sym.downcase
+				else
+					:ok
+				end
+			}, nil)
+		end
+
 		result = C.glyr_get(to_native, error, length)
 
 		raise_if_error error.typecast(:int)
@@ -167,8 +182,8 @@ class Query
 	%w[cover_art lyrics artist_photos artist_bio similar_artists similar_songs album_reviews tracklist tags relations album_list guitar_tabs backdrops].each {|name|
 		name = name.to_sym
 
-		define_method name do
-			type(name).get
+		define_method name do |&block|
+			type(name).get(&block)
 		end
 	}
 

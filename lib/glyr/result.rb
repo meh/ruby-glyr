@@ -25,19 +25,41 @@ class Result
 
 	class Data
 		def self.wrap (struct, result) # :nodoc:
-			return new(struct, result) if struct[:type] == :noidea
+			return if struct[:type] == :noidea
 
 			::Glyr.const_get(struct[:type].to_s.capitalize.gsub(/_(\w)/) { $1.upcase }).
 				new(struct, result)
 		end
 
-		attr_reader   :result
-		attr_accessor :rating
+		def self.copy (struct) # :nodoc:
+			return if struct[:type] == :noidea
 
-		def initialize (pointer, result)
+			pointer = C.glyr_cache_copy(struct)
+
+			::Glyr.const_get(struct[:type].to_s.capitalize.gsub(/_(\w)/) { $1.upcase }).
+				new(pointer).tap {|data|
+					ObjectSpace.define_finalizer data, finalizer(pointer)
+				}
+		end
+
+		def self.finalizer (pointer) # :nodoc:
+			proc {
+				C.glyr_cache_free(pointer)
+			}
+		end
+
+		attr_reader :result
+
+		def initialize (pointer, result = nil)
 			@internal = pointer.is_a?(FFI::Pointer) ? C::MemCache.new(pointer) : pointer
 			@result   = result
 		end
+
+		def clone
+			self.class.copy(to_native)
+		end
+
+		alias dup clone
 
 		def data
 			to_native[:data].read_string(to_native[:size])
@@ -49,6 +71,14 @@ class Result
 
 		def provider
 			to_native[:prov].read_string
+		end
+
+		def rating
+			to_native[:rating]
+		end
+
+		def rating= (value)
+			to_native[:rating] = value
 		end
 
 		def to_native
