@@ -11,20 +11,20 @@
 module Glyr
 
 class Result
-	def self.wrap (pointer)
-		new(pointer).tap {|x|
+	def self.wrap (pointer, length = nil) # :nodoc:
+		new(pointer, length).tap {|x|
 			ObjectSpace.define_finalizer x, finalizer(pointer)
 		}
 	end
 
-	def self.finalizer (pointer)
+	def self.finalizer (pointer) # :nodoc:
 		proc {
 			C.glyr_free_list(pointer)
 		}
 	end
 
 	class Data
-		def self.wrap (struct, result)
+		def self.wrap (struct, result) # :nodoc:
 			return new(struct, result) if struct[:type] == :noidea
 
 			::Glyr.const_get(struct[:type].to_s.capitalize.gsub(/_(\w)/) { $1.upcase }).
@@ -37,6 +37,10 @@ class Result
 		def initialize (pointer, result)
 			@internal = pointer.is_a?(FFI::Pointer) ? C::MemCache.new(pointer) : pointer
 			@result   = result
+		end
+
+		def data
+			to_native[:data].read_string(to_native[:size])
 		end
 
 		def source
@@ -53,7 +57,7 @@ class Result
 
 		module Image
 			def to_blob
-				to_native[:data].read_string(to_native[:size]).force_encoding('BINARY')
+				data
 			end
 
 			def format
@@ -63,7 +67,7 @@ class Result
 
 		module Text
 			def to_s
-				to_native[:data].read_string(to_native[:size])
+				data
 			end
 
 			alias to_str to_s
@@ -91,7 +95,7 @@ class Result
 			def initialize (*)
 				super
 
-				@name, _, @url = to_native[:data].read_string(to_native[:size]).lines.map(&:chomp)
+				@name, _, @url = data.lines.map(&:chomp)
 			end
 
 		end
@@ -102,7 +106,7 @@ class Result
 			def initialize (*)
 				super
 
-				@title, @artist, _, @url = to_native[:data].read_string(to_native[:size]).lines.map(&:chomp)
+				@title, @artist, _, @url = data.lines.map(&:chomp)
 			end
 		end
 
@@ -152,8 +156,11 @@ class Result
 
 	include Enumerable
 
-	def initialize (pointer)
+	attr_reader :length
+
+	def initialize (pointer, length = nil)
 		@internal = pointer.is_a?(FFI::Pointer) ? C::MemCache.new(pointer) : pointer
+		@length   = length
 	end
 
 	def each (&block)

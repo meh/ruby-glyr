@@ -15,6 +15,7 @@ require 'glyr/query'
 require 'glyr/result'
 
 module Glyr
+	# helper to create a Query object
 	def self.query (options = {})
 		Query.create(options)
 	end
