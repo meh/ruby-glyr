@@ -13,3 +13,9 @@ require 'glyr/c'
 require 'glyr/version'
 require 'glyr/query'
 require 'glyr/result'
+
+module Glyr
+	def self.query (options = {})
+		Query.create(options)
+	end
+end
