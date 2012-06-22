@@ -13,10 +13,16 @@ require 'glyr/c'
 require 'glyr/version'
 require 'glyr/query'
 require 'glyr/result'
+require 'glyr/providers'
+require 'glyr/sources'
 
 module Glyr
 	# helper to create a Query object
 	def self.query (options = {})
 		Query.create(options)
+	end
+
+	def self.providers
+		Providers.create
 	end
 end

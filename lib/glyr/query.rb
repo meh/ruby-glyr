@@ -18,10 +18,9 @@ class Query
 		C.glyr_query_init(struct.pointer)
 
 		wrap(struct.pointer, options)
-
 	end
 
-	def self.wrap (pointer, options = {}) # :nodoc:
+	def self.wrap (pointer, options = {})
 		new(pointer, options).tap {|x|
 			ObjectSpace.define_finalizer x, finalizer(pointer)
 		}
@@ -48,54 +47,98 @@ class Query
 	end
 
 	# tell the Query what you want to get
-	def type (value)
-		raise_if_error C.glyr_opt_type(to_native, value.is_a?(Symbol) ? value : C::GetType[value])
+	def type (value = nil)
+		if value
+			raise_if_error C.glyr_opt_type(to_native, value.is_a?(Symbol) ? value : C::GetType[value])
+		else
+			to_native[:type]
+		end
 	end
 
 	# set the artist
-	def artist (value)
-		raise_if_error C.glyr_opt_artist(to_native, value)
+	def artist (value = nil)
+		if value
+			raise_if_error C.glyr_opt_artist(to_native, value)
+		else
+			to_native[:artist]
+		end
 	end
 
 	# set the album
-	def album (value)
-		raise_if_error C.glyr_opt_album(to_native, value)
+	def album (value = nil)
+		if value
+			raise_if_error C.glyr_opt_album(to_native, value)
+		else
+			to_native[:album]
+		end
 	end
 
 	# set the title
-	def title (value)
-		raise_if_error C.glyr_opt_title(to_native, value)
+	def title (value = nil)
+		if value
+			raise_if_error C.glyr_opt_title(to_native, value)
+		else
+			to_native[:title]
+		end
 	end
 
 	# set the image size boundaries
-	def image_boundaries (min, max = min)
-		raise_if_error C.glyr_opt_img_minsize(to_native, min)
-		raise_if_error C.glyr_opt_img_maxsize(to_native, max)
+	def image_boundaries (min = nil, max = min)
+		if min && max
+			raise_if_error C.glyr_opt_img_minsize(to_native, min)
+			raise_if_error C.glyr_opt_img_maxsize(to_native, max)
+		else
+			[to_native[:img_min_size], to_native[:img_max_size]]
+		end
 	end
 
 	# set the number of parallel searches
-	def parallel (value)
-		raise_if_error C.glyr_opt_parallel(to_native, value)
+	def parallel (value = nil)
+		if value
+			raise_if_error C.glyr_opt_parallel(to_native, value)
+		else
+			to_native[:parallel]
+		end
 	end
 
 	# set the timeout for the searching
-	def timeout (value)
-		raise_if_error C.glyr_opt_timeout(to_native, value)
+	def timeout (value = nil)
+		if value
+			raise_if_error C.glyr_opt_timeout(to_native, value)
+		else
+			to_native[:timeout]
+		end
 	end
 
 	# set the max amount of redirects
-	def redirects (value)
-		raise_if_error C.glyr_opt_redirects(to_native, value)
+	def redirects (value = nil)
+		if value
+			raise_if_error C.glyr_opt_redirects(to_native, value)
+		else
+			to_native[:redirects]
+		end
 	end
 
 	# set the user agent to use
-	def user_agent (value)
-		raise_if_error C.glyr_opt_useragent(to_native, value)
+	def user_agent (value = nil)
+		if value
+			raise_if_error C.glyr_opt_useragent(to_native, value)
+		else
+			to_native[:useragent]
+		end
 	end
 
-	# set the language to search for
-	def language (value)
-		raise_if_error C.glyr_opt_lang(to_native, value)
+	# set or get the language to search for
+	def language (value = nil)
+		if value
+			raise_if_error C.glyr_opt_lang(to_native, value)
+		else
+			to_native[:lang]
+		end
+	end
+
+	def language_aware?
+		to_native[:lang_aware_only]
 	end
 
 	# only fetch from language aware providers
@@ -109,29 +152,53 @@ class Query
 	end
 
 	# set the maximum number of results
-	def number (value)
-		raise_if_error C.glyr_opt_number(to_native, value)
+	def maximum (value = nil)
+		if value
+			raise_if_error C.glyr_opt_number(to_native, value)
+		else
+			to_native[:number]
+		end
 	end
 
 	# set the maximum number of results per provider
-	def number_per_provider (value)
-		raise_if_error C.glyr_opt_plugmax(to_native, value)
+	def maximum_per_provider (value = nil)
+		if value
+			raise_if_error C.glyr_opt_plugmax(to_native, value)
+		else
+			to_native[:plugmax]
+		end
 	end
 
 	# set the level of verbosity
-	def verbosity (value)
-		raise_if_error C.glyr_opt_verbosity(to_native, value)
+	def verbosity (value = nil)
+		if value
+			raise_if_error C.glyr_opt_verbosity(to_native, value)
+		else
+			to_native[:verbosity]
+		end
 	end
 
 	# use only the passed providers (you can use all and disable single providers by prefixing
 	# them with a -)
 	def from (*providers)
-		raise_if_error C.glyr_opt_from(to_native, providers.flatten.compact.uniq.join(';'))
+		unless providers.empty?
+			raise_if_error C.glyr_opt_from(to_native, providers.flatten.compact.uniq.join(';'))
+		else
+			to_native[:from] && to_native[:from].split(/\s*;\s*/)
+		end
 	end
 
 	# use only the passed formats
 	def allowed_formats (*formats)
-		raise_if_error C.glyr_opt_allowed_formats(to_native, formats.flatten.compact.uniq.join(';'))
+		unless formats.empty?
+			raise_if_error C.glyr_opt_allowed_formats(to_native, formats.flatten.compact.uniq.join(';'))
+		else
+			to_native[:allowed_formats] && to_native[:allowed_formats].split(/\s*;\s*/)
+		end
+	end
+
+	def download?
+		to_native[:download]
 	end
 
 	# download the data instead of just passing a URL
@@ -144,17 +211,41 @@ class Query
 		raise_if_error C.glyr_opt_download(to_native, false)
 	end
 
-	def fuzzyness (value)
-		raise_if_error C.glyr_opt_fuzzyness(to_native, value)
+	def fuzzyness (value = nil)
+		if value
+			raise_if_error C.glyr_opt_fuzzyness(to_native, value)
+		else
+			to_native[:fuzzyness]
+		end
 	end
 
-	def ratio (value)
-		raise_if_error C.glyr_opt_qsratio(to_native, value)
+	def ratio (value = nil)
+		if value
+			raise_if_error C.glyr_opt_qsratio(to_native, value)
+		else
+			to_native[:qsratio]
+		end
 	end
 
 	# use the passed proxy to fetch the stuff
-	def proxy (value)
-		raise_if_error C.glyr_opt_proxy(to_native, value)
+	def proxy (value = nil)
+		if value
+			raise_if_error C.glyr_opt_proxy(to_native, value)
+		else
+			to_native[:proxy]
+		end
+	end
+
+	def path (value = nil)
+		if value
+			raise_if_error C.glyr_opt_musictree_path(to_native, vlaue)
+		else
+			to_native[:musictree_path]
+		end
+	end
+
+	def force_utf8?
+		to_native[:force_utf8]
 	end
 
 	def force_utf8!
@@ -181,6 +272,8 @@ class Query
 					:ok
 				end
 			}, nil)
+		else
+			C.glyr_opt_dlcallback(to_native, nil, nil)
 		end
 
 		result = C.glyr_get(to_native, error, length)

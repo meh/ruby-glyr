@@ -48,8 +48,6 @@ class Result
 			}
 		end
 
-		attr_reader :result
-
 		def initialize (pointer, result = nil)
 			@internal = pointer.is_a?(FFI::Pointer) ? C::MemCache.new(pointer) : pointer
 			@result   = result
@@ -199,7 +197,7 @@ class Result
 		until current.null?
 			block.call(Data.wrap(current, self))
 
-			current = C::MemCache.new(@internal[:next])
+			current = C::MemCache.new(current[:next])
 		end
 
 		self
