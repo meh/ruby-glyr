@@ -67,6 +67,12 @@ class Query
 		raise_if_error C.glyr_opt_title(to_native, value)
 	end
 
+	# set the image size boundaries
+	def image_boundaries (min, max = min)
+		raise_if_error C.glyr_opt_img_minsize(to_native, min)
+		raise_if_error C.glyr_opt_img_maxsize(to_native, max)
+	end
+
 	# set the number of parallel searches
 	def parallel (value)
 		raise_if_error C.glyr_opt_parallel(to_native, value)
@@ -105,6 +111,11 @@ class Query
 	# set the maximum number of results
 	def number (value)
 		raise_if_error C.glyr_opt_number(to_native, value)
+	end
+
+	# set the maximum number of results per provider
+	def number_per_provider (value)
+		raise_if_error C.glyr_opt_plugmax(to_native, value)
 	end
 
 	# set the level of verbosity
