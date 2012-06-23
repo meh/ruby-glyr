@@ -74,7 +74,7 @@ class Sources
 	end
 
 	def [] (name)
-		to_hash[name]
+		find { |p| p.name == name || p.key == name }
 	end
 
 	def to_hash

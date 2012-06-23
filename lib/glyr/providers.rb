@@ -81,7 +81,7 @@ class Providers
 	end
 
 	def [] (name)
-		to_hash[name]
+		find { |p| p.name == name || p.type == name }
 	end
 
 	def to_hash

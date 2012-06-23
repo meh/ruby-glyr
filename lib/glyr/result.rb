@@ -63,12 +63,12 @@ class Result
 			to_native[:data].read_string(to_native[:size])
 		end
 
-		def source
+		def url
 			to_native[:dsrc].read_string
 		end
 
-		def provider
-			to_native[:prov].read_string
+		def source
+			Glyr.providers[type].sources[to_native[:prov].read_string]
 		end
 
 		def rating
@@ -77,6 +77,10 @@ class Result
 
 		def rating= (value)
 			to_native[:rating] = value
+		end
+
+		def type
+			to_native[:type]
 		end
 
 		def to_native

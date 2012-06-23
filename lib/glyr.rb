@@ -23,6 +23,6 @@ module Glyr
 	end
 
 	def self.providers
-		Providers.create
+		@providers ||= Providers.create
 	end
 end
