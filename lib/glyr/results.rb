@@ -125,7 +125,17 @@ class Result
 
 	module Text
 		def to_s
-			data
+			string = data
+
+			if string.force_encoding('UTF-8').valid_encoding?
+				string
+			elsif string.force_encoding('ISO-8859-1').valid_encoding?
+				string.encode!('UTF-8')
+			else
+				string.encode!('UTF-8', invalid: :replace, undef: :replace)
+			end
+
+			string
 		end
 
 		alias to_str to_s
