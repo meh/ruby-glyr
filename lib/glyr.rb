@@ -12,7 +12,7 @@ require 'glyr/c'
 
 require 'glyr/version'
 require 'glyr/query'
-require 'glyr/result'
+require 'glyr/results'
 require 'glyr/providers'
 require 'glyr/sources'
 

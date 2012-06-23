@@ -11,41 +11,6 @@
 module Glyr
 
 class Providers
-	class Provider
-		def initialize (pointer, providers)
-			@internal  = pointer.is_a?(FFI::Pointer) ? C::FetcherInfo.new(pointer) : pointer
-			@providers = providers
-		end
-
-		def name
-			to_native[:name]
-		end
-
-		def type
-			to_native[:type]
-		end
-
-		def requirements
-			FieldRequirements[to_native[:reqs]]
-		end
-
-		def sources
-			Sources.new(to_native[:head], self)
-		end
-
-		alias to_s name
-
-		alias to_sym type
-
-		def to_native
-			@internal
-		end
-
-		def inspect
-			"#<Glyr::Provider(#{name}): #{requirements}>"
-		end
-	end
-
 	def self.create
 		pointer = C.glyr_info_get
 
@@ -90,6 +55,41 @@ class Providers
 
 	def to_native
 		@internal
+	end
+end
+
+class Provider
+	def initialize (pointer, providers)
+		@internal  = pointer.is_a?(FFI::Pointer) ? C::FetcherInfo.new(pointer) : pointer
+		@providers = providers
+	end
+
+	def name
+		to_native[:name]
+	end
+
+	def type
+		to_native[:type]
+	end
+
+	def requirements
+		FieldRequirements[to_native[:reqs]]
+	end
+
+	def sources
+		Sources.new(to_native[:head], self)
+	end
+
+	alias to_s name
+
+	alias to_sym type
+
+	def to_native
+		@internal
+	end
+
+	def inspect
+		"#<Glyr::Provider(#{name}): #{requirements}>"
 	end
 end
 

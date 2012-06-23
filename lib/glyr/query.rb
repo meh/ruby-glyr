@@ -262,7 +262,7 @@ class Query
 
 		if block
 			raise_if_error C.glyr_opt_dlcallback(to_native, proc {|data, query|
-				result = block.call(Result::Data.copy(C::MemCache.new(data)))
+				result = block.call(Result.copy(C::MemCache.new(data)))
 
 				if result.respond_to? :to_i
 					C::Error[result.to_i]
@@ -280,7 +280,7 @@ class Query
 
 		raise_if_error error.typecast(:int)
 
-		Result.wrap(result, length.typecast(:int))
+		Results.wrap(result, length.typecast(:int))
 	end
 
 	%w[cover_art lyrics artist_photos artist_bio similar_artists similar_songs album_reviews tracklist tags relations album_list guitar_tabs backdrops].each {|name|
