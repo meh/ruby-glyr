@@ -60,15 +60,15 @@ class Result
 		alias dup clone
 
 		def data
-			to_native[:data].read_string(to_native[:size])
+			to_native[:data].typecast(:string, to_native[:size])
 		end
 
 		def url
-			to_native[:dsrc].read_string
+			to_native[:dsrc].typecast(:string)
 		end
 
 		def source
-			Glyr.providers[type].sources[to_native[:prov].read_string]
+			Glyr.providers[type].sources[to_native[:prov].typecast(:string)]
 		end
 
 		def rating
@@ -93,7 +93,7 @@ class Result
 			end
 
 			def format
-				to_native[:img_format].read_string
+				to_native[:img_format].typecast(:string)
 			end
 		end
 
