@@ -36,7 +36,7 @@ class Results
 		current = @internal
 
 		until current.null?
-			block.call(Data.wrap(current, self))
+			block.call(Result.wrap(current, self))
 
 			current = C::MemCache.new(current[:next])
 		end
