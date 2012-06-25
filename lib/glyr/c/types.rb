@@ -98,9 +98,11 @@ class MemCache < FFI::Struct
 		:prev, :pointer
 end
 
+callback :glyr_foreach_callback, [:pointer, :pointer, :pointer], :int
+
 class Database < FFI::Struct
 	layout \
-		:root_path, :string,
+		:root_path, :pointer,
 		:db_handle, :pointer
 end
 

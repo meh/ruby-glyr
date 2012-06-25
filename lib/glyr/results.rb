@@ -29,7 +29,19 @@ class Results
 
 	def initialize (pointer, length = nil)
 		@internal = pointer.is_a?(FFI::Pointer) ? C::MemCache.new(pointer) : pointer
-		@length   = length
+		@length   = if length
+			length
+		else
+			length  = 0
+			current = @internal
+
+			until current.null?
+				length  += 1
+				current  = C::MemCache.new(current[:next])
+			end
+
+			length
+		end
 	end
 
 	def each (&block)
@@ -107,6 +119,10 @@ class Result
 
 	def type
 		to_native[:type]
+	end
+
+	def md5
+		to_native[:md5sum]
 	end
 
 	def to_native

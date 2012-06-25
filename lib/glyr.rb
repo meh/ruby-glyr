@@ -12,6 +12,7 @@ require 'glyr/c'
 
 require 'glyr/version'
 require 'glyr/query'
+require 'glyr/database'
 require 'glyr/results'
 require 'glyr/providers'
 require 'glyr/sources'
@@ -24,5 +25,15 @@ module Glyr
 
 	def self.providers
 		@providers ||= Providers.create
+	end
+
+	def self.cache_at (path = nil)
+		if path
+			@database = Database.create(path).write!.read!
+
+			self
+		else
+			@database
+		end
 	end
 end

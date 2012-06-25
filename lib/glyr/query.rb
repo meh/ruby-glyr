@@ -197,6 +197,14 @@ class Query
 		end
 	end
 
+	def cache (value = nil)
+		if value
+			@cache = Database.create(value)
+		else
+			@cache
+		end
+	end
+
 	def download?
 		to_native[:download]
 	end
@@ -273,7 +281,13 @@ class Query
 				end
 			}, nil)
 		else
-			C.glyr_opt_dlcallback(to_native, nil, nil)
+			raise_if_error C.glyr_opt_dlcallback(to_native, nil, nil)
+		end
+
+		if db = cache || Glyr.cache_at
+			raise_if_error C.glyr_opt_lookup_db(to_native, db.to_native)
+			raise_if_error C.glyr_opt_db_autoread(to_native, true) if db.read?
+			raise_if_error C.glyr_opt_db_autowrite(to_native, true) if db.write?
 		end
 
 		result = C.glyr_get(to_native, error, length)

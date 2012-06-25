@@ -80,4 +80,14 @@ attach_function :glyr_get_requirements, [GetType], :int
 
 attach_function :glyr_type_is_image, [GetType], :bool
 
+attach_function :glyr_db_init, [:string], :pointer
+attach_function :glyr_db_destroy, [:pointer], :void
+attach_function :glyr_db_lookup, [:pointer, :pointer], :pointer
+attach_function :glyr_db_insert, [:pointer, :pointer, :pointer], :void
+attach_function :glyr_db_delete, [:pointer, :pointer], :int
+attach_function :glyr_db_edit, [:pointer, :pointer, :pointer], :int
+attach_function :glyr_db_replace, [:pointer, :pointer, :pointer, :pointer], :void
+attach_function :glyr_db_foreach, [:pointer, :glyr_foreach_callback, :pointer], :void
+attach_function :glyr_db_make_dummy, [], :pointer
+
 end; end
