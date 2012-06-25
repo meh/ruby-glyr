@@ -23,8 +23,6 @@ class Database
 	end
 
 	def self.wrap (pointer)
-		puts pointer.inspect
-
 		new(pointer).tap {|x|
 			ObjectSpace.define_finalizer x, finalizer(pointer)
 		}
