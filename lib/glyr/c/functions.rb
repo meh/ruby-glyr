@@ -60,6 +60,7 @@ attach_function :glyr_opt_lookup_db, [:pointer, :pointer], Error
 attach_function :glyr_opt_db_autowrite, [:pointer, :bool], Error
 attach_function :glyr_opt_db_autoread, [:pointer, :bool], Error
 attach_function :glyr_opt_musictree_path, [:pointer, :string], Error
+attach_function :glyr_opt_normalize, [:pointer, :int], Error
 
 attach_function :glyr_download, [:string, :pointer], :pointer
 attach_function :glyr_strerror, [Error], :string

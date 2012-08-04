@@ -246,9 +246,17 @@ class Query
 
 	def path (value = nil)
 		if value
-			raise_if_error C.glyr_opt_musictree_path(to_native, vlaue)
+			raise_if_error C.glyr_opt_musictree_path(to_native, value)
 		else
 			to_native[:musictree_path]
+		end
+	end
+
+	def normalize (*args)
+		unless args.empty?
+			raise_if_error C.glyr_opt_normalize(to_native, Normalization[*args].to_i)
+		else
+			Normalization[to_native[:normalization]]
 		end
 	end
 

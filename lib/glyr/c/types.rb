@@ -68,6 +68,15 @@ DataType = FFI::Enum.new([
 	:backdrops
 ])
 
+Normalization = Bitmap.new(
+	none:       1 << 0,
+	moderate:   1 << 1,
+	aggressive: 1 << 2,
+	artist:     1 << 3,
+	album:      1 << 4,
+	title:      1 << 5
+)
+
 FieldRequirement = Bitmap.new(
 	requires_artist: 1 << 0,
 	requires_album:  1 << 1,
